@@ -1,0 +1,4 @@
+spring:
+  application:
+    name: lovable
+    description: A code generation app

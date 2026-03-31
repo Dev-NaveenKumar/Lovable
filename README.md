@@ -1,0 +1,2 @@
+# Lovable
+Code generation app

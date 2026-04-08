@@ -2,6 +2,7 @@ package com.projects.lovable.controller;
 
 import com.projects.lovable.dto.member.InviteMemberRequest;
 import com.projects.lovable.dto.member.MemberResponse;
+import com.projects.lovable.dto.member.UpdateMemberRoleRequest;
 import com.projects.lovable.service.ProjectMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class ProjectMemberController {
     public ResponseEntity<MemberResponse> updateMemberRole(
             @PathVariable Long projectId,
             @PathVariable Long memberId,
-            @RequestBody InviteMemberRequest request
+            @RequestBody UpdateMemberRoleRequest request
     ) {
         Long userId = 1L;
         return ResponseEntity.ok(projectMemberService.updateMemberRole(request,memberId, userId, projectId));

@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectController {
 
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
     @GetMapping
     public ResponseEntity<List<ProjectSummaryResponse>> getMyProjects() {

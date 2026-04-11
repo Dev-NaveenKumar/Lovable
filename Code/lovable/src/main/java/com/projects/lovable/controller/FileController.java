@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileController {
 
-    private FileService fileService;
+    private final FileService fileService;
 
     @GetMapping
     public ResponseEntity<List<FileNode>> getFiles(@PathVariable("projectId") Long projectId) {

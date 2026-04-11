@@ -12,8 +12,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class BillingController {
-    private SubscriptionService subscriptionService;
-    private PlanService planService;
+    private final SubscriptionService subscriptionService;
+    private final PlanService planService;
 
     @GetMapping("/api/plan")
      public ResponseEntity<List<PlanResponse>> getAllPlans(){

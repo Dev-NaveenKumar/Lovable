@@ -1,23 +1,37 @@
 package com.projects.lovable.entity;
 
-import com.projects.lovable.enums.SubscriptionStatus;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "projects")
 public class Project {
+
+    @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long  id;
 
+    @Column(nullable = false)
     private String name;
 
-    private User user;
+    @ManyToOne()
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     private Boolean isPublic=false;
 
+    @CreationTimestamp
     private Instant createdAt;
+
+    @UpdateTimestamp
     private Instant updatedAt;
     private Instant deletedAt;
 }

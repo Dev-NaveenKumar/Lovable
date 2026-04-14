@@ -26,7 +26,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long id){
         Long userId=1L;
-        return ResponseEntity.ok(projectService.getUserProject(userId));
+        return ResponseEntity.ok(projectService.getUserProjectById(userId,id));
     }
 
     @PostMapping
@@ -36,7 +36,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProjectService> updateProject(@PathVariable Long id, @RequestBody ProjectRequest request){
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody ProjectRequest request){
         Long userId=1L;
         return ResponseEntity.ok(projectService.updateProject(id,userId,request));
     }

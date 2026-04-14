@@ -13,7 +13,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,24 +39,47 @@ public class ProjectServiceImpl implements ProjectService {
 
         return projectMapper.toProjectResponse(createdProject);
     }
+
     @Override
     public List<ProjectSummaryResponse> getUserProjects(Long userId) {
-        return List.of();
+//        return projectRepository.findAllAccessibleByUser(userId)
+//                .stream()
+//                .map(projectMapper::toProjectSummaryResponse)
+//                .toList();
+        return projectMapper.
+                toProjectSummaryResponseList(projectRepository
+                        .findAllAccessibleByUser(userId));
     }
 
     @Override
-    public ProjectResponse getUserProject(Long userId) {
-        return null;
+    public ProjectResponse getUserProjectById(Long userId, Long projectId) {
+        Project project = getAccessibleProjectById(userId, projectId);
+        return projectMapper.toProjectResponse(project);
     }
 
 
     @Override
-    public ProjectService updateProject(Long id, Long userId, ProjectRequest request) {
-        return null;
+    public ProjectResponse updateProject(Long projectId, Long userId, ProjectRequest request) {
+        Project project = getAccessibleProjectById(userId, projectId);
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException("You're not allowed to update this project.");
+        }
+        project.setName(request.name());
+//        project = projectRepository.save(project);
+        return projectMapper.toProjectResponse(project);
     }
 
     @Override
-    public void softDeleteProject(Long id, Long userId) {
+    public void softDeleteProject(Long projectId, Long userId) {
+        Project project = getAccessibleProjectById(userId, projectId);
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException("You're not allowed to delete this project.");
+        }
+        project.setDeletedAt(Instant.now());
+//        projectRepository.save(project);
+    }
 
+    public Project getAccessibleProjectById(Long userId, Long projectId) {
+        return projectRepository.findAccessibleProjectById(projectId, userId).orElseThrow();
     }
 }

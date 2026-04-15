@@ -7,6 +7,7 @@ import com.projects.lovable.entity.Project;
 import com.projects.lovable.entity.ProjectMember;
 import com.projects.lovable.entity.ProjectMemberId;
 import com.projects.lovable.entity.User;
+import com.projects.lovable.error.ResourceNotFoundException;
 import com.projects.lovable.mapper.ProjectMemberMapper;
 import com.projects.lovable.repository.ProjectMemberRepository;
 import com.projects.lovable.repository.ProjectRepository;
@@ -118,6 +119,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     public Project getAccessibleProjectById(Long userId, Long projectId) {
-        return projectRepository.findAccessibleProjectById(projectId, userId).orElseThrow();
+        return projectRepository.findAccessibleProjectById(projectId, userId)
+                .orElseThrow(()-> new ResourceNotFoundException("Project and User", projectId+" and "+userId));
     }
 }

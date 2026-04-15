@@ -13,7 +13,12 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "projects")
+@Table(name = "projects",
+        indexes = {
+        @Index(name="idx_projects_updated_at_desc", columnList = "updated_at DESC, deleted_at"),
+        @Index(name="idx_projects_deleted_at_desc", columnList = "deleted_at")
+        }
+)
 public class Project {
 
     @Id@GeneratedValue(strategy = GenerationType.IDENTITY)

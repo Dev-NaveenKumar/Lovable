@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,35 +34,30 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public List<MemberResponse> getProjectMembers(long projectId, Long userId) {
         Project project = getAccessibleProjectById(userId, projectId);
 
-        List<MemberResponse> memberResponseList = new ArrayList<>();
-
-        memberResponseList.add(projectMemberMapper
-                .toProjectMemberResponseFromOwner(project.getOwner()));
-
-        memberResponseList.addAll(projectMemberRepository.findByIdProjectId(projectId)
+        return projectMemberRepository.findByIdProjectId(projectId)
                 .stream()
                 .map(projectMemberMapper::toProjectMemberResponseFromProjectMember)
-                .toList());
-        return memberResponseList;
+                .toList();
     }
 
     @Override
     public MemberResponse inviteMember(InviteMemberRequest request, Long userId, Long projectId) {
         Project project = getAccessibleProjectById(userId, projectId);
 
-        if(!project.getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Not allowed to invite member.");
-        }
+//        if(!project.getOwner().getId().equals(userId)) {
+//            throw new RuntimeException("Not allowed to invite member.");
+//        }
 
-        User invitee = userRepository.findByEmail(request.email()).orElseThrow();
+        User invitee = userRepository.findByUsername(request.username())
+                .orElseThrow(() -> new ResourceNotFoundException("User Name", request.username()));
 
-        if(invitee.getId().equals(userId)) {
+        if (invitee.getId().equals(userId)) {
             throw new RuntimeException("Cannot invite yourself.");
         }
 
-        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,invitee.getId());
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId, invitee.getId());
 
-        if(projectMemberRepository.existsById(projectMemberId)) {
+        if (projectMemberRepository.existsById(projectMemberId)) {
             throw new RuntimeException("Cannot invite again.");
         }
 
@@ -84,13 +78,15 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public MemberResponse updateMemberRole(UpdateMemberRoleRequest request, Long memberId, Long userId, Long projectId) {
         Project project = getAccessibleProjectById(userId, projectId);
 
-        if(!project.getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Not allowed to invite member.");
-        }
+//        if(!project.getOwner().getId().equals(userId)) {
+//            throw new RuntimeException("Not allowed to invite member.");
+//        }
 
-        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
 
-        ProjectMember projectMember = projectMemberRepository.findById(projectMemberId).orElseThrow();
+        ProjectMember projectMember = projectMemberRepository.findById(projectMemberId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Project ID and Member ID", projectId + " and " + userId));
 
         projectMember.setProjectRole(request.role());
 
@@ -105,13 +101,13 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
         Project project = getAccessibleProjectById(userId, projectId);
 
-        if(!project.getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Not allowed to invite member.");
-        }
+//        if(!project.getOwner().getId().equals(userId)) {
+//            throw new RuntimeException("Not allowed to invite member.");
+//        }
 
-        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
 
-        if(!projectMemberRepository.existsById(projectMemberId)) {
+        if (!projectMemberRepository.existsById(projectMemberId)) {
             throw new RuntimeException("Member does not exist.");
         }
 
@@ -120,6 +116,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     public Project getAccessibleProjectById(Long userId, Long projectId) {
         return projectRepository.findAccessibleProjectById(projectId, userId)
-                .orElseThrow(()-> new ResourceNotFoundException("Project and User", projectId+" and "+userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Project and User", projectId + " and " + userId));
     }
 }

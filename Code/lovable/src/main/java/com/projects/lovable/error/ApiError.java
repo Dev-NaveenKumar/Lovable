@@ -13,12 +13,14 @@ public record ApiError(
         Instant timestamp,
         @JsonInclude(JsonInclude.Include.NON_NULL) List<ApiFieldError> errors
 ) {
-    public ApiError(HttpStatus status, String message){
-        this(status, message, Instant.now(),null);
+    public ApiError(HttpStatus status, String message) {
+        this(status, message, Instant.now(), null);
     }
-    public ApiError(HttpStatus status, String message, List<ApiFieldError> fieldErrors){
-        this(status, message, Instant.now(),fieldErrors);
+
+    public ApiError(HttpStatus status, String message, List<ApiFieldError> fieldErrors) {
+        this(status, message, Instant.now(), fieldErrors);
     }
 }
 
-record ApiFieldError(String field, String message){}
+record ApiFieldError(String field, String message) {
+}

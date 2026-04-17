@@ -6,7 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,10 +20,8 @@ public class User {
     private Long id;
 
     private String name;
-    private String email;
-    private String passwordHash;
-
-    private String avatarUrl;
+    private String username;
+    private String password;
 
     @CreationTimestamp
     private Instant createdAt;

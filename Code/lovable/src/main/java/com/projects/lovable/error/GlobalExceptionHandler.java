@@ -13,6 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiError> handleBadRequestException(BadRequestException ex){
+        String message =ex.getMessage();
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage());
         log.error(ex.getMessage(), ex);
         return ResponseEntity.status(apiError.status()).body(apiError);

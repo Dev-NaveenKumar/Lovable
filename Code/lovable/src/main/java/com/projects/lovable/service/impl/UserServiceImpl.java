@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserProfileReponse getProfile(Long userId) {
+    public UserProfileReponse getProfile() {
         return null;
     }
 

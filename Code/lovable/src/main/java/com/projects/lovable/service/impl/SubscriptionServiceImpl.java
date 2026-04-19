@@ -4,23 +4,29 @@ import com.projects.lovable.dto.subscription.CheckoutRequest;
 import com.projects.lovable.dto.subscription.CheckoutResponse;
 import com.projects.lovable.dto.subscription.PortalResponse;
 import com.projects.lovable.dto.subscription.SubscriptionResponse;
+import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.SubscriptionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    private final AuthUtil authUtil;
+
     @Override
-    public SubscriptionResponse getCurrentSubscription(Long userId) {
+    public SubscriptionResponse getCurrentSubscription() {
         return null;
     }
 
     @Override
-    public CheckoutResponse createCheckoutSessionUrl(Long userId, CheckoutRequest request) {
+    public CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request) {
         return null;
     }
 
     @Override
-    public PortalResponse openCustomerPortal(Long userId) {
+    public PortalResponse openCustomerPortal() {
         return null;
     }
 }

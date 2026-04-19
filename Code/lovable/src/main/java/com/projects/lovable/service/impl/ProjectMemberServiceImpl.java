@@ -12,6 +12,7 @@ import com.projects.lovable.mapper.ProjectMemberMapper;
 import com.projects.lovable.repository.ProjectMemberRepository;
 import com.projects.lovable.repository.ProjectRepository;
 import com.projects.lovable.repository.UserRepository;
+import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.ProjectMemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,11 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberMapper projectMemberMapper;
     private final UserRepository userRepository;
+    private final AuthUtil authUtil;
 
     @Override
-    public List<MemberResponse> getProjectMembers(long projectId, Long userId) {
-        Project project = getAccessibleProjectById(userId, projectId);
+    public List<MemberResponse> getProjectMembers(long projectId) {
+        Project project = getAccessibleProjectById(projectId);
 
         return projectMemberRepository.findByIdProjectId(projectId)
                 .stream()
@@ -41,8 +43,9 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse inviteMember(InviteMemberRequest request, Long userId, Long projectId) {
-        Project project = getAccessibleProjectById(userId, projectId);
+    public MemberResponse inviteMember(InviteMemberRequest request, Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(projectId);
 
 //        if(!project.getOwner().getId().equals(userId)) {
 //            throw new RuntimeException("Not allowed to invite member.");
@@ -75,8 +78,9 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse updateMemberRole(UpdateMemberRoleRequest request, Long memberId, Long userId, Long projectId) {
-        Project project = getAccessibleProjectById(userId, projectId);
+    public MemberResponse updateMemberRole(UpdateMemberRoleRequest request, Long memberId, Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(projectId);
 
 //        if(!project.getOwner().getId().equals(userId)) {
 //            throw new RuntimeException("Not allowed to invite member.");
@@ -97,9 +101,9 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public void removeProjectMember(Long memberId, Long userId, Long projectId) {
+    public void removeProjectMember(Long memberId, Long projectId) {
 
-        Project project = getAccessibleProjectById(userId, projectId);
+        Project project = getAccessibleProjectById(projectId);
 
 //        if(!project.getOwner().getId().equals(userId)) {
 //            throw new RuntimeException("Not allowed to invite member.");
@@ -114,7 +118,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         projectMemberRepository.deleteById(projectMemberId);
     }
 
-    public Project getAccessibleProjectById(Long userId, Long projectId) {
+    public Project getAccessibleProjectById(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
         return projectRepository.findAccessibleProjectById(projectId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project and User", projectId + " and " + userId));
     }

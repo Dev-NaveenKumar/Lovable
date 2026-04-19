@@ -6,9 +6,9 @@ import com.projects.lovable.dto.subscription.PortalResponse;
 import com.projects.lovable.dto.subscription.SubscriptionResponse;
 
 public interface SubscriptionService {
-    SubscriptionResponse getCurrentSubscription(Long userId);
+    SubscriptionResponse getCurrentSubscription();
 
-    CheckoutResponse createCheckoutSessionUrl(Long userId, CheckoutRequest request);
+    CheckoutResponse createCheckoutSessionUrl( CheckoutRequest request);
 
-    PortalResponse openCustomerPortal(Long userId);
+    PortalResponse openCustomerPortal();
 }

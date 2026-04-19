@@ -13,6 +13,7 @@ import com.projects.lovable.mapper.ProjectMapper;
 import com.projects.lovable.repository.ProjectMemberRepository;
 import com.projects.lovable.repository.ProjectRepository;
 import com.projects.lovable.repository.UserRepository;
+import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.ProjectService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,11 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
+    private final AuthUtil authUtil;
 
     @Override
-    public ProjectResponse getCreateProject(ProjectRequest request, Long userId) {
-
+    public ProjectResponse getCreateProject(ProjectRequest request) {
+        Long userId = authUtil.getCurrentUserId();
         User owner = userRepository.findById(userId)
                 .orElseThrow(()->new ResourceNotFoundException("User",userId));
 
@@ -59,7 +61,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) {
+    public List<ProjectSummaryResponse> getUserProjects() {
+        Long userId = authUtil.getCurrentUserId();
 //        return projectRepository.findAllAccessibleByUser(userId)
 //                .stream()
 //                .map(projectMapper::toProjectSummaryResponse)
@@ -70,15 +73,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long userId, Long projectId) {
-        Project project = getAccessibleProjectById(userId, projectId);
+    public ProjectResponse getUserProjectById(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(projectId);
         return projectMapper.toProjectResponse(project);
     }
 
 
     @Override
-    public ProjectResponse updateProject(Long projectId, Long userId, ProjectRequest request) {
-        Project project = getAccessibleProjectById(userId, projectId);
+    public ProjectResponse updateProject(Long projectId, ProjectRequest request) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(projectId);
 //        if(!project.getOwner().getId().equals(userId)){
 //            throw new RuntimeException("You're not allowed to update this project.");
 //        }
@@ -88,8 +93,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void softDeleteProject(Long projectId, Long userId) {
-        Project project = getAccessibleProjectById(userId, projectId);
+    public void softDeleteProject(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(projectId);
 //        if(!project.getOwner().getId().equals(userId)){
 //            throw new RuntimeException("You're not allowed to delete this project.");
 //        }
@@ -97,7 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
 //        projectRepository.save(project);
     }
 
-    public Project getAccessibleProjectById(Long userId, Long projectId) {
+    public Project getAccessibleProjectById(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
         return projectRepository.findAccessibleProjectById(projectId, userId)
                 .orElseThrow(()-> new ResourceNotFoundException("Project and User", projectId+" and "+userId));
     }

@@ -22,7 +22,7 @@ public class FileController {
     @GetMapping
     public ResponseEntity<List<FileNode>> getFiles(@PathVariable("projectId") Long projectId) {
         Long userId=1L;
-        return ResponseEntity.ok(fileService.getFileTree(projectId,userId));
+        return ResponseEntity.ok(fileService.getFileTree(projectId));
     }
 
     @GetMapping("/{*path}")// * to get path as "/src/resource/java"

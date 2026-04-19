@@ -18,3 +18,5 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+jwt:
+  secret-key: b3746x367n34nx5ab87w736bwc8374cbw8374cbwi347n7b348i374cbw837bcib384cb7843bw8743bw7834cwbki47wciw7cbw7iby47cwx4785c45b74c5b8

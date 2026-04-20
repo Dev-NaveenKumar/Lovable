@@ -17,6 +17,7 @@ import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.ProjectService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -37,8 +38,12 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse getCreateProject(ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
-        User owner = userRepository.findById(userId)
-                .orElseThrow(()->new ResourceNotFoundException("User",userId));
+//        User owner = userRepository.findById(userId)
+//                .orElseThrow(()->new ResourceNotFoundException("User",userId));
+        User owner = userRepository.getReferenceById(userId);
+        // getReferenceById just puts the proxy of the object,
+        // and there's only the id not whole object
+        // when we call owner.getName(), then it make a db call and fetch
 
         Project project = Project.builder()
                 .name(request.name())
@@ -50,6 +55,8 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectMember projectMember = ProjectMember.builder()
                 .id(projectMemberId)
                 .projectRole(ProjectRole.OWNER)
+                //we only need owner id only
+                // that is why getReferenceById is used
                 .user(owner)
                 .project(createdProject)
                 .acceptedAt(Instant.now())
@@ -73,6 +80,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    // must add @EnableMethodSecurity on any Configuration class to set the AOP interceptors
+    @PreAuthorize("@security.canViewProject(#projectId)")
+    // Bypasses AOP proxy — @PreAuthorize won't trigger -- this.getUserProjectById(projectId);
+    // Called from controller via injected bean — works fine -- projectService.getUserProjectById(projectId);
     public ProjectResponse getUserProjectById(Long projectId) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId);
@@ -81,6 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     @Override
+    @PreAuthorize("@security.canEditProject(#projectId)")
     public ProjectResponse updateProject(Long projectId, ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId);

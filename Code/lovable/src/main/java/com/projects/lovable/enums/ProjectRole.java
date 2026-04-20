@@ -11,9 +11,9 @@ import static com.projects.lovable.enums.ProjectPermission.*;
 @RequiredArgsConstructor
 @Getter
 public enum ProjectRole {
-    EDITOR(Set.of(EDIT,VIEW,DELETE)),
+    EDITOR(Set.of(EDIT,VIEW,DELETE,VIEW_MEMBERS)),
     VIEWER(Set.of(VIEW)),
-    OWNER(Set.of(EDIT,VIEW,DELETE,MANAGE_MEMBERS));
+    OWNER(Set.of(EDIT,VIEW,DELETE,MANAGE_MEMBERS,VIEW_MEMBERS)),;
 
     private final Set<ProjectPermission> permissions;
 }

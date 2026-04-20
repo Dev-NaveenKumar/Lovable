@@ -1,6 +1,7 @@
 package com.projects.lovable.controller;
 
 import com.projects.lovable.dto.subscription.*;
+import com.projects.lovable.service.PaymentProcessor;
 import com.projects.lovable.service.PlanService;
 import com.projects.lovable.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 public class BillingController {
     private final SubscriptionService subscriptionService;
     private final PlanService planService;
+    private final PaymentProcessor paymentProcessor;
 
     @GetMapping("/api/plan")
      public ResponseEntity<List<PlanResponse>> getAllPlans(){
@@ -26,19 +28,19 @@ public class BillingController {
         return ResponseEntity.ok(subscriptionService.getCurrentSubscription());
     }
 
-    @PostMapping("/api/stripe/checkout")
+    @PostMapping("/api/payments/checkout")
     public ResponseEntity<CheckoutResponse> createCheckoutResponse(
             @RequestBody CheckoutRequest request
     ){
         Long userId=1L;
-        return ResponseEntity.ok(subscriptionService.createCheckoutSessionUrl(request));
+        return ResponseEntity.ok(paymentProcessor.createCheckoutSessionUrl(request));
 
     }
 
-    @PostMapping("/api/stripe/portal")
+    @PostMapping("/api/payments/portal")
     public ResponseEntity<PortalResponse> openCustomerPortal(){
         Long userId=1L;
-        return ResponseEntity.ok(subscriptionService.openCustomerPortal());
+        return ResponseEntity.ok(paymentProcessor.openCustomerPortal());
 
     }
 }

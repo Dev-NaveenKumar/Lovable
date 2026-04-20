@@ -19,14 +19,4 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public SubscriptionResponse getCurrentSubscription() {
         return null;
     }
-
-    @Override
-    public CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request) {
-        return null;
-    }
-
-    @Override
-    public PortalResponse openCustomerPortal() {
-        return null;
-    }
 }

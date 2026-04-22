@@ -49,7 +49,7 @@ public class AuthUtil {
     }
 
     public Long getCurrentUserId(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null || !(authentication.getPrincipal() instanceof JwtUserPrincipal userPrincipal)){
             throw new AuthenticationCredentialsNotFoundException("No token found");
         }

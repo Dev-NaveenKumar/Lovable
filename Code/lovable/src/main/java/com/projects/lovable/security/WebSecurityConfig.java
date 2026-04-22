@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFIlter;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
@@ -29,7 +31,16 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
-                ).addFilterBefore(jwtAuthFIlter, UsernamePasswordAuthenticationFilter.class);
+                ).addFilterBefore(jwtAuthFIlter, UsernamePasswordAuthenticationFilter.class)
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint((request, response, authException) ->
+//                                handlerExceptionResolver.resolveException(request, response, null, authException)
+//                        )
+//                        .accessDeniedHandler((request, response, accessDeniedException) ->
+//                                handlerExceptionResolver.resolveException(request, response, null, accessDeniedException)
+//                        )
+//                )
+        ;
         return httpSecurity.build();
     }
 

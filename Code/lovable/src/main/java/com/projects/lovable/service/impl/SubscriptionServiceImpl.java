@@ -4,6 +4,7 @@ import com.projects.lovable.dto.subscription.CheckoutRequest;
 import com.projects.lovable.dto.subscription.CheckoutResponse;
 import com.projects.lovable.dto.subscription.PortalResponse;
 import com.projects.lovable.dto.subscription.SubscriptionResponse;
+import com.projects.lovable.repository.PlanRepository;
 import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;

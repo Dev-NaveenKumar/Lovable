@@ -23,3 +23,6 @@ jwt:
 
 stripe:
   secret: sk_test_51TOIVMBELDaxfnE15wAGmhzLxH4zoZhIeCqx4H3GgKwruX3x9eLx18unalYCTM7nACRffjniKTwGo8dDOV9Hc2TF00vrTf7RSQ
+
+client:
+  url: http://localhost:8080

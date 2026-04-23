@@ -27,6 +27,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
 
+    @Column(unique = true)
+    private String stripeCustomerId;
+
     @CreationTimestamp
     private Instant createdAt;
 

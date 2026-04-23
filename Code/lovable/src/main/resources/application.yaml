@@ -22,7 +22,10 @@ jwt:
   secret-key: b3746x367n34nx5ab87w736bwc8374cbw8374cbwi347n7b348i374cbw837bcib384cb7843bw8743bw7834cwbki47wciw7cbw7iby47cwx4785c45b74c5b8
 
 stripe:
-  secret: sk_test_51TOIVMBELDaxfnE15wAGmhzLxH4zoZhIeCqx4H3GgKwruX3x9eLx18unalYCTM7nACRffjniKTwGo8dDOV9Hc2TF00vrTf7RSQ
+  api:
+    secret: sk_test_51TOIVMBELDaxfnE15wAGmhzLxH4zoZhIeCqx4H3GgKwruX3x9eLx18unalYCTM7nACRffjniKTwGo8dDOV9Hc2TF00vrTf7RSQ
+  webhook:
+    secret: whsec_585b1772217850fba9e075f27c2e3f42157a92cd2fa89a60c8217de84471f600
 
 client:
   url: http://localhost:8080

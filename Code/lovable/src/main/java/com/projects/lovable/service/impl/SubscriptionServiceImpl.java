@@ -15,7 +15,9 @@ import com.projects.lovable.repository.SubscriptionRepository;
 import com.projects.lovable.repository.UserRepository;
 import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.SubscriptionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final AuthUtil authUtil;
@@ -61,14 +64,53 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void updateSubscription(String subscriptionId, SubscriptionStatus status,
+    @Transactional
+    public void updateSubscription(String gatewaySubscriptionId, SubscriptionStatus status,
                                    Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId) {
+        Subscription subscription = getSubscription(gatewaySubscriptionId);
+        boolean isSubscriptionHasBeenUpdated = false;
 
+        if (status != null && status != subscription.getStatus()) {
+            subscription.setStatus(status);
+            isSubscriptionHasBeenUpdated = true;
+        }
+
+        if (periodStart != null && !periodStart.equals(subscription.getCurrentPeriodStart())) {
+            subscription.setCurrentPeriodStart(periodStart);
+            isSubscriptionHasBeenUpdated = true;
+        }
+
+        if (periodEnd != null && !periodEnd.equals(subscription.getCurrentPeriodEnd())) {
+            subscription.setCurrentPeriodEnd(periodEnd);
+            isSubscriptionHasBeenUpdated = true;
+        }
+
+        if (cancelAtPeriodEnd != null && !cancelAtPeriodEnd.equals(subscription.getCancelAtPeriodEnd())) {
+            subscription.setCancelAtPeriodEnd(cancelAtPeriodEnd);
+            isSubscriptionHasBeenUpdated = true;
+        }
+
+        if (planId != null && !planId.equals(subscription.getPlan().getId())) {
+            subscription.setPlan(getPlan(planId));
+            isSubscriptionHasBeenUpdated = true;
+        }
+
+        if (isSubscriptionHasBeenUpdated) {
+            log.debug("Subscription updated: {}", gatewaySubscriptionId);
+            subscriptionRepository.save(subscription);
+        }
     }
 
     @Override
-    public void cancelSubscription(String subscriptionId) {
+    public void cancelSubscription(String gatewaySubscriptionId) {
+        Subscription subscription = getSubscription(gatewaySubscriptionId);
 
+        if(subscription.getStatus()==SubscriptionStatus.CANCELLED){
+            log.debug("Subscription is already Cancelled, GatewaySubscriptionId: {}", gatewaySubscriptionId);
+            return;
+        }
+        subscription.setStatus(SubscriptionStatus.CANCELLED);
+        subscriptionRepository.save(subscription);
     }
 
     @Override
@@ -88,7 +130,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void markSubscriptionPastDue(String gatewaySubscriptionId) {
+        Subscription subscription = getSubscription(gatewaySubscriptionId);
 
+        if(subscription.getStatus()==SubscriptionStatus.PAST_DUE){
+            log.debug("Subscription is already PastDue, GatewaySubscriptionId: {}", gatewaySubscriptionId);
+            return;
+        }
+        subscription.setStatus(SubscriptionStatus.PAST_DUE);
+        subscriptionRepository.save(subscription);
+        //Notify user with email
     }
 
     //Utility methods

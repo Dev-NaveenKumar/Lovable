@@ -6,6 +6,7 @@ import com.projects.lovable.dto.subscription.PortalResponse;
 import com.projects.lovable.entity.Plan;
 import com.projects.lovable.entity.User;
 import com.projects.lovable.enums.SubscriptionStatus;
+import com.projects.lovable.error.BadRequestException;
 import com.projects.lovable.error.ResourceNotFoundException;
 import com.projects.lovable.repository.PlanRepository;
 import com.projects.lovable.repository.UserRepository;
@@ -71,7 +72,25 @@ public class StripePaymentProcessor implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal() {
-        return null;
+        Long userId = authUtil.getCurrentUserId();
+        User user = getUser(userId);
+        String stripeCustomerId = user.getStripeCustomerId();
+
+        if(stripeCustomerId==null || stripeCustomerId.isEmpty()){
+            throw new BadRequestException("User does not have a Stripe customer ID, User ID: "+user);
+        }
+
+        try {
+            var session = com.stripe.model.billingportal.Session.create(
+                    com.stripe.param.billingportal.SessionCreateParams.builder()
+                            .setCustomer(stripeCustomerId)
+                            .setReturnUrl(frontEndUrl + "/cancel.html")
+                            .build()
+            );
+            return new PortalResponse(session.getUrl());
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

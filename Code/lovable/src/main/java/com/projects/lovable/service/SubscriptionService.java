@@ -4,8 +4,21 @@ import com.projects.lovable.dto.subscription.CheckoutRequest;
 import com.projects.lovable.dto.subscription.CheckoutResponse;
 import com.projects.lovable.dto.subscription.PortalResponse;
 import com.projects.lovable.dto.subscription.SubscriptionResponse;
+import com.projects.lovable.enums.SubscriptionStatus;
+
+import java.time.Instant;
 
 public interface SubscriptionService {
     SubscriptionResponse getCurrentSubscription();
 
+    void activateSubscription(Long userId, Long planId, String subscription, String customerId);
+
+    void updateSubscription(String subscriptionId, SubscriptionStatus status, Instant periodStart,
+                            Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId);
+
+    void cancelSubscription(String subscriptionId);
+
+    void renewSubscriptionPeriod(String subscriptionId, Instant periodStart, Instant periodEnd);
+
+    void markSubscriptionPastDue(String subscriptionId);
 }

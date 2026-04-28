@@ -11,6 +11,7 @@ import com.projects.lovable.enums.SubscriptionStatus;
 import com.projects.lovable.error.ResourceNotFoundException;
 import com.projects.lovable.mapper.SubscriptionMapper;
 import com.projects.lovable.repository.PlanRepository;
+import com.projects.lovable.repository.ProjectMemberRepository;
 import com.projects.lovable.repository.SubscriptionRepository;
 import com.projects.lovable.repository.UserRepository;
 import com.projects.lovable.security.AuthUtil;
@@ -34,6 +35,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
+    private final ProjectMemberRepository projectMemberRepository;
+    private final Integer FREE_TIER_PROJECT_LIMIT = 1;
 
     @Override
     public SubscriptionResponse getCurrentSubscription() {
@@ -105,7 +108,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void cancelSubscription(String gatewaySubscriptionId) {
         Subscription subscription = getSubscription(gatewaySubscriptionId);
 
-        if(subscription.getStatus()==SubscriptionStatus.CANCELLED){
+        if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
             log.debug("Subscription is already Cancelled, GatewaySubscriptionId: {}", gatewaySubscriptionId);
             return;
         }
@@ -121,7 +124,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setCurrentPeriodStart(newStart);
         subscription.setCurrentPeriodEnd(periodEnd);
 
-        if(subscription.getStatus()==SubscriptionStatus.PAST_DUE || subscription.getStatus()==SubscriptionStatus.INCOMPLETE){
+        if (subscription.getStatus() == SubscriptionStatus.PAST_DUE || subscription.getStatus() == SubscriptionStatus.INCOMPLETE) {
             subscription.setStatus(SubscriptionStatus.ACTIVE);
         }
 
@@ -132,13 +135,28 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void markSubscriptionPastDue(String gatewaySubscriptionId) {
         Subscription subscription = getSubscription(gatewaySubscriptionId);
 
-        if(subscription.getStatus()==SubscriptionStatus.PAST_DUE){
+        if (subscription.getStatus() == SubscriptionStatus.PAST_DUE) {
             log.debug("Subscription is already PastDue, GatewaySubscriptionId: {}", gatewaySubscriptionId);
             return;
         }
         subscription.setStatus(SubscriptionStatus.PAST_DUE);
         subscriptionRepository.save(subscription);
         //Notify user with email
+    }
+
+
+    @Override
+    public boolean canCreateNewProject() {
+        SubscriptionResponse currentSubscription = getCurrentSubscription();
+        Long userId = authUtil.getCurrentUserId();
+
+        int countOfOwnedProjects = projectMemberRepository.countProjectOwnedByUser(userId);
+
+        if (currentSubscription.plan() == null) {
+            return countOfOwnedProjects < FREE_TIER_PROJECT_LIMIT;
+        }
+
+        return  countOfOwnedProjects < currentSubscription.plan().maxProjects();
     }
 
     //Utility methods

@@ -8,6 +8,7 @@ import com.projects.lovable.entity.ProjectMember;
 import com.projects.lovable.entity.ProjectMemberId;
 import com.projects.lovable.entity.User;
 import com.projects.lovable.enums.ProjectRole;
+import com.projects.lovable.error.BadRequestException;
 import com.projects.lovable.error.ResourceNotFoundException;
 import com.projects.lovable.mapper.ProjectMapper;
 import com.projects.lovable.repository.ProjectMemberRepository;
@@ -15,6 +16,7 @@ import com.projects.lovable.repository.ProjectRepository;
 import com.projects.lovable.repository.UserRepository;
 import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.ProjectService;
+import com.projects.lovable.service.SubscriptionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,10 +36,15 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
     private final AuthUtil authUtil;
+    private final SubscriptionService  subscriptionService;
 
     @Override
     public ProjectResponse getCreateProject(ProjectRequest request) {
         Long userId = authUtil.getCurrentUserId();
+
+        if(!subscriptionService.canCreateNewProject()){
+            throw new BadRequestException("User cannot create New project with current plan, Upgrade plan now.");
+        }
 //        User owner = userRepository.findById(userId)
 //                .orElseThrow(()->new ResourceNotFoundException("User",userId));
         User owner = userRepository.getReferenceById(userId);

@@ -18,6 +18,15 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+  ai:
+    openai:
+      api-key:
+      base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model:
+          temperature: 0.0 #for coding model it should be 0, as we don't want it to generate randome outputs
+
 jwt:
   secret-key: b3746x367n34nx5ab87w736bwc8374cbw8374cbwi347n7b348i374cbw837bcib384cb7843bw8743bw7834cwbki47wciw7cbw7iby47cwx4785c45b74c5b8
 
@@ -29,3 +38,5 @@ stripe:
 
 client:
   url: http://localhost:8080
+
+kind: Application

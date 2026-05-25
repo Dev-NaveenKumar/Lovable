@@ -11,7 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "chat_session")
+@Table(name = "chat_sessions")
 public class ChatSession {
 
     @EmbeddedId
@@ -20,13 +20,13 @@ public class ChatSession {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("projectId")
-    @JoinColumn(name = "projectid", nullable = false, updatable = false)
+    @JoinColumn(name = "project_id", nullable = false, updatable = false)
     private Project project;
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("userId")
-    @JoinColumn(name = "userId", nullable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
     @CreationTimestamp

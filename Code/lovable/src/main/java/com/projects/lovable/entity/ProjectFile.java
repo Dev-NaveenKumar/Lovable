@@ -1,24 +1,36 @@
 package com.projects.lovable.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
-@Getter
-@Setter
+@Getter@Setter
+@Entity
+@Table(name="project_files")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProjectFile {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id",nullable = false)
     private Project project;
+
+    @Column(nullable = false)
     private String path;
+
     private String minIoObjectKey;
 
+    @CreationTimestamp
     private Instant createdAt;
+
+    @UpdateTimestamp
     private Instant updatedAt;
-
-    private User createdBy;
-    private User updatedBy;
-
 }

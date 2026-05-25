@@ -20,11 +20,11 @@ spring:
 
   ai:
     openai:
-      api-key:
+      api-key: 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
       base-url: https://openrouter.ai/api
       chat:
         options:
-          model:
+          model: openai/gpt-oss-120b:free
           temperature: 0.0 #for coding model it should be 0, as we don't want it to generate randome outputs
 
 jwt:
@@ -40,3 +40,9 @@ client:
   url: http://localhost:8080
 
 kind: Application
+
+minio:
+  url: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin123
+  project-bucket: lovable

@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  pgvector:
+    image: pgvector/pgvector:0.8.1-pg18-trixie
+    container_name: pgvector-db-lovable
+    environment:
+      POSTGRES_DB: lovable
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - /Users/nk/home/dev-data/Docker-Mounts:/var/lib/postgresql
+    restart: unless-stopped
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: minio-lovable
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /Users/nk/home/dev-data/Minio-Store:/data
+    restart: unless-stopped
+
+volumes:
+  minio-data:
+  pgvector-data:

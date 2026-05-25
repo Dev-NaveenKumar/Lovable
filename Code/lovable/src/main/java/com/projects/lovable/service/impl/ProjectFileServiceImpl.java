@@ -2,13 +2,15 @@ package com.projects.lovable.service.impl;
 
 import com.projects.lovable.dto.project.FileContentResponse;
 import com.projects.lovable.dto.project.FileNode;
-import com.projects.lovable.service.FileService;
+import com.projects.lovable.service.ProjectFileService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class FileServiceImpl implements FileService {
+@Slf4j
+public class ProjectFileServiceImpl implements ProjectFileService {
 
     @Override
     public List<FileNode> getFileTree(Long projectId) {
@@ -18,5 +20,12 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileContentResponse getFile(Long projectId, String path) {
         return null;
+    }
+
+    @Override
+    public void saveFile(Long projectId, String filePath, String fileContent) {
+      log.info("Saving file: {}", filePath);
+      //Save metadata in the postgres
+      //Save the content inside minio
     }
 }

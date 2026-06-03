@@ -30,7 +30,7 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(@RequestBody @Valid ProjectRequest request){
-        return ResponseEntity.ok(projectService.getCreateProject(request));
+        return ResponseEntity.ok(projectService.createProject(request));
     }
 
     @PatchMapping("/{id}")

@@ -1,6 +1,8 @@
 package com.projects.lovable.service.impl;
 
 import com.projects.lovable.llm.PromptUtils;
+import com.projects.lovable.llm.advisors.FileTreeContextAdvisor;
+import com.projects.lovable.llm.tools.CodeGenerationTools;
 import com.projects.lovable.security.AuthUtil;
 import com.projects.lovable.service.AiGenerationService;
 import com.projects.lovable.service.ProjectFileService;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.stringtemplate.v4.compiler.CodeGenerator;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
@@ -28,6 +31,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     private final AuthUtil authUtil;
     private static final Pattern FILE_TAG_PATTERN = Pattern.compile("<file path=\"([^\"]+)\">(.*?)</file>", Pattern.DOTALL);
     private final ProjectFileService projectFileService;
+    private final FileTreeContextAdvisor fileTreeContextAdvisor;
 
     @Override
     @PreAuthorize("@security.canEditProject(#projectId)")
@@ -42,11 +46,14 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
         StringBuilder fullContentBuffer = new StringBuilder();
 
+        CodeGenerationTools codeGenerationTools = new CodeGenerationTools(projectFileService,projectId);
         return chatClient.prompt()
                 .system(PromptUtils.CODE_GENERATION_SYSTEM_PROMPT)
                 .user(message)
+                .tools(codeGenerationTools)
                 .advisors(advisorSpec -> {
                     advisorSpec.params(advisorParams);
+                    advisorSpec.advisors(fileTreeContextAdvisor);
                 })
                 .stream()
 //                .content() //-- it only returns the content

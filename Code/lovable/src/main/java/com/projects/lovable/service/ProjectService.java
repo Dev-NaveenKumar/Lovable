@@ -12,7 +12,7 @@ public interface ProjectService {
 
     ProjectResponse getUserProjectById(Long projectId);
 
-    ProjectResponse getCreateProject(ProjectRequest request);
+    ProjectResponse createProject(ProjectRequest request);
 
     ProjectResponse updateProject(Long id, ProjectRequest request);
 

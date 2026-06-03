@@ -9,6 +9,7 @@ import com.projects.lovable.mapper.ProjectFileMapper;
 import com.projects.lovable.repository.ProjectFileRepository;
 import com.projects.lovable.repository.ProjectRepository;
 import com.projects.lovable.service.ProjectFileService;
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +45,22 @@ public class ProjectFileServiceImpl implements ProjectFileService {
     }
 
     @Override
-    public FileContentResponse getFile(Long projectId, String path) {
-        return null;
+    public FileContentResponse getFileContent(Long projectId, String path) {
+        String objectName = projectId + "/" + path;
+
+        try (
+                InputStream is = minioClient.getObject(
+                        GetObjectArgs.builder()
+                                .bucket(projectBucketName)
+                                .object(objectName)
+                                .build()
+                )) {
+            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            return new FileContentResponse(path, content);
+        } catch (Exception e) {
+            log.error("Failed to read file: {}/{}", projectId, path, e);
+            throw new RuntimeException("Failed to read file content ̰", e);
+        }
     }
 
     @Override
@@ -84,10 +99,10 @@ public class ProjectFileServiceImpl implements ProjectFileService {
 
             projectFileRepository.save(projectFile);
 
-            log.info("File saved: {}",objectKey);
+            log.info("File saved: {}", objectKey);
         } catch (Exception e) {
-            log.info("Failed to save file {}/{}",projectId,cleanPath,e);
-            throw new RuntimeException("File save failed",e);
+            log.info("Failed to save file {}/{}", projectId, cleanPath, e);
+            throw new RuntimeException("File save failed", e);
         }
     }
 

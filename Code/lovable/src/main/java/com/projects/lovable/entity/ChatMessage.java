@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "chat_messages")
@@ -39,5 +40,9 @@ public class ChatMessage {
 
     @CreationTimestamp
     private Instant cratedAt;
+
+    @OneToMany(mappedBy = "chatMessage" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("sequenceOrder ASC")
+    private List<ChatEvent> chatEvent;
 
 }

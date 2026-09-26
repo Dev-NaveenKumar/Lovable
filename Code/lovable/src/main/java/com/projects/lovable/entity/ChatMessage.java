@@ -39,10 +39,10 @@ public class ChatMessage {
     private Integer tokensUsed=0;
 
     @CreationTimestamp
-    private Instant cratedAt;
+    private Instant createdAt;
 
     @OneToMany(mappedBy = "chatMessage" , fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OrderBy("sequenceOrder ASC")
-    private List<ChatEvent> chatEvent;
+    private List<ChatEvent> events;
 
 }

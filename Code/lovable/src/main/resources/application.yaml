@@ -26,7 +26,7 @@ spring:
         options:
 #          model: openai/gpt-oss-20b:free
           model: openrouter/free
-          temperature: 0.0 #for coding model it should be 0, as we don't want it to generate randome outputs
+          temperature: 0.0 #for coding model it should be 0, as we don't want it to generate random outputs
 
 jwt:
   secret-key: b3746x367n34nx5ab87w736bwc8374cbw8374cbwi347n7b348i374cbw837bcib384cb7843bw8743bw7834cwbki47wciw7cbw7iby47cwx4785c45b74c5b8
@@ -42,7 +42,7 @@ client:
 
 kind: Application
 
-minio:
+minio: #http://127.0.0.1:9001/browser/lovable
   url: http://localhost:9000
   access-key: minioadmin
   secret-key: minioadmin123

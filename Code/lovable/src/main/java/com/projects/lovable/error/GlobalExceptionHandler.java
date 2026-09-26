@@ -1,5 +1,6 @@
 package com.projects.lovable.error;
 
+import com.stripe.exception.StripeException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -68,6 +69,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex){
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN,"Access denied: Insufficient permission");
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
+    @ExceptionHandler(StripeException.class)
+    public ResponseEntity<ApiError> handleStripeException(StripeException ex){
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR,"Stripe error: "+ ex.getMessage());
         log.error(ex.getMessage(), ex);
         return ResponseEntity.status(apiError.status()).body(apiError);
     }
